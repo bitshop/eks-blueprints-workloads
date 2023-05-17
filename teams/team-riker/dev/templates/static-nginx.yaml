@@ -4,24 +4,34 @@ metadata:
   name: static-nginx
   labels:
     name: static-nginx
-    app: static-nginx
-    env: dev
-    team: riker
+    {{- toYaml .Values.labels | nindent 4 }}
 spec:
-  containers:
-  - name: nginx
-    image: nginx
-    ports:
-      - containerPort: 80
-    volumeMounts:
-      - mountPath: /usr/share/nginx/html/index.html
-        name: nginx-conf
-        subPath: index.html
-  volumes:
-    - name: nginx-conf
-      configMap:
-        name: nginx-index-html-configmap
-  data:
-    nginx-index.html-configmap: |
-      <html><H1>Hello World!</H1></html>
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: static-nginx
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: static-nginx
+    spec:
+      containers:
+      - name: static-nginx
+        image: nginx
+        ports:
+          - containerPort: 80
+            protocol: TCP
+        ports:
+          - containerPort: 80
+        volumeMounts:
+          - mountPath: /usr/share/nginx/html/index.html
+            name: nginx-conf
+            subPath: index.html
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: nginx-index-html-configmap
+      data:
+        nginx-index.html-configmap: |
+          <html><H1>Hello World!</H1></html>
 #  immutable: true
