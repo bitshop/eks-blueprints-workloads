@@ -50,7 +50,7 @@ metadata:
     {{- toYaml .Values.labels | nindent 4 }}
 spec:
   ports:
-    - port: 81
+    - port: 80
       targetPort: 80
       protocol: TCP
   type: NodePort
@@ -104,4 +104,4 @@ spec:
             service:
               name: service-static-nginx
               port:
-                number: 81
+                number: 80
