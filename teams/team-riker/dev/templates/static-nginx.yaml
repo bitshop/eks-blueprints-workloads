@@ -40,3 +40,68 @@ spec:
       #   nginx-index.html-configmap: |
       #     <html><H1>Hello World!</H1></html>
 #  immutable: true
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: team-riker
+  name: service-static-nginx
+  labels:
+    app: static-nginx
+    {{- toYaml .Values.labels | nindent 4 }}
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: app-static-nginx
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: team-riker
+  name: ingress-static-nginx
+  labels:
+    app: static-nginx
+    {{- toYaml .Values.labels | nindent 4 }}
+  annotations:
+{{ if eq .Values.spec.ingress.type "nginx" }}
+    kubernetes.io/ingress.class: "nginx"
+{{ else }}
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+  {{ if .Values.spec.ingress.host }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80,"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+  {{ else }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+  {{ end }}
+    alb.ingress.kubernetes.io/tags: Environment={{ .Values.labels.env }},Team=Riker
+{{ end }}
+  {{ if .Values.spec.ingress.host }}
+    external-dns.alpha.kubernetes.io/set-identifier: {{ .Values.spec.clusterName }}
+    external-dns.alpha.kubernetes.io/aws-weight: '{{ .Values.spec.ingress.route53_weight }}'
+    external-dns.alpha.kubernetes.io/ttl: "10"
+  {{ end }}     
+spec:
+{{ if eq .Values.spec.ingress.type "nginx" }}
+  kubernetes.io/ingress.class: "nginx"
+{{ else }}
+  ingressClassName: alb
+{{ end }}
+  rules:
+{{ if .Values.spec.ingress.host }}
+    - host: static-nginx.{{ .Values.spec.ingress.host }}
+{{ else }}
+    - host: 
+{{ end }}
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: service-static-nginx
+              port:
+                number: 80
