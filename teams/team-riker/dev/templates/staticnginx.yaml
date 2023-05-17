@@ -22,8 +22,8 @@ spec:
     spec:
       automountServiceAccountToken: false
       containers:
-        - name: staticnginx
-          image: nginx:latest
+        - image: public.ecr.aws/nginx/nginx:latest
+          imagePullPolicy: Always
           name: app-staticnginx
           ports:
             - containerPort: 80
