@@ -28,17 +28,17 @@ spec:
             requests:
               cpu: 250m
               memory: 50Mi
-          volumeMounts:
-            - mountPath: /usr/share/nginx/html/index.html
-              name: nginx-conf
-              subPath: index.html
-      volumes:
-        - name: nginx-conf
-          configMap:
-            name: nginx-index-html-configmap
-      data:
-        nginx-index.html-configmap: |
-          <html><H1>Hello World!</H1></html>
+      #     volumeMounts:
+      #       - mountPath: /usr/share/nginx/html/index.html
+      #         name: nginx-conf
+      #         subPath: index.html
+      # volumes:
+      #   - name: nginx-conf
+      #     configMap:
+      #       name: nginx-index-html-configmap
+      # data:
+      #   nginx-index.html-configmap: |
+      #     <html><H1>Hello World!</H1></html>
 #  immutable: true
 apiVersion: v1
 kind: Service
