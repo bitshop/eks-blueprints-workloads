@@ -38,14 +38,11 @@ spec:
           volumeMounts:
             - mountPath: /usr/share/nginx/html/index.html
               name: nginx-conf
-#              subPath: index.html
+              subPath: index.html
       volumes:
         - name: nginx-conf
           configMap:
-            name: nginx-index-html-configmap
-      data:
-        nginx-index.html-configmap: |
-          <html><H1>Hello World!</H1></html>
+            name: staticnginx-config
       # dnsPolicy: ClusterFirst
       # restartPolicy: Always
       # schedulerName: default-scheduler
@@ -69,6 +66,15 @@ spec:
       #       matchLabels:
       #         app.kubernetes.io/name: app-2049
 #  immutable: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: staticnginx-config
+  namespace: team-riker
+data:
+  index.html: |
+    <html><H1>Hello World!</H1></html>
 ---
 apiVersion: v1
 kind: Service
