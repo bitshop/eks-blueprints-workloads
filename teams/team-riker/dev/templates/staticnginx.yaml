@@ -1,15 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment-static-nginx
+  name: deployment-staticnginx
   labels:
-    app: static-nginx
+    app: staticnginx
     {{- toYaml .Values.labels | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: app-static-nginx
-  replicas: 1
+      app.kubernetes.io/name: app-staticnginx
+  replicas: 3
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -18,12 +18,13 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: app-static-nginx
+        app.kubernetes.io/name: app-staticnginx
     spec:
       automountServiceAccountToken: false
       containers:
-        - name: static-nginx
+        - name: staticnginx
           image: nginx:latest
+          name: app-staticnginx
           ports:
             - containerPort: 80
               protocol: TCP
@@ -50,9 +51,9 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: team-riker
-  name: service-static-nginx
+  name: service-staticnginx
   labels:
-    app: static-nginx
+    app: staticnginx
     {{- toYaml .Values.labels | nindent 4 }}
 spec:
   ports:
@@ -61,15 +62,15 @@ spec:
       protocol: TCP
   type: NodePort
   selector:
-    app.kubernetes.io/name: app-static-nginx
+    app.kubernetes.io/name: app-staticnginx
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   namespace: team-riker
-  name: ingress-static-nginx
+  name: ingress-staticnginx
   labels:
-    app: static-nginx
+    app: staticnginx
     {{- toYaml .Values.labels | nindent 4 }}
   annotations:
 {{ if eq .Values.spec.ingress.type "nginx" }}
@@ -98,7 +99,7 @@ spec:
 {{ end }}
   rules:
 {{ if .Values.spec.ingress.host }}
-    - host: static-nginx.{{ .Values.spec.ingress.host }}
+    - host: staticnginx.{{ .Values.spec.ingress.host }}
 {{ else }}
     - host: 
 {{ end }}
@@ -108,6 +109,6 @@ spec:
           pathType: Prefix
           backend:
             service:
-              name: service-static-nginx
+              name: service-staticnginx
               port:
                 number: 80
