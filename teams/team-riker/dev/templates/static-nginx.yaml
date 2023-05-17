@@ -1,9 +1,12 @@
 apiVersion: v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: static-nginx
   labels:
-    name: nginx
+    name: static-nginx
+    app: static-nginx
+    env: dev
+    team: riker
 spec:
   containers:
   - name: nginx
