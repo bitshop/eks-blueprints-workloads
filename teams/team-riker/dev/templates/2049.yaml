@@ -22,7 +22,7 @@ spec:
     spec:
       automountServiceAccountToken: false
       containers:
-        - image: public.ecr.aws/l6m2t8p7/docker-2049:latest
+        - image: public.ecr.aws/l6m2t8p7/docker-2048:latest
           imagePullPolicy: Always
           name: app-2049
           ports:
